@@ -18,6 +18,7 @@ function createSeedState() {
     ui: {
       activeTab: 'dashboard',
       expenseCategoryFilter: 'all',
+      editingStockId: null,
       watchlist: { sortByTopPerformers: false, sectorFilter: 'all' },
     },
     income: [
@@ -147,6 +148,12 @@ export const deleteStock = (id) => deleteFrom('stocks', id);
 
 export function updateStock(id, patch) {
   state.stocks = state.stocks.map((item) => (item.id === id ? { ...item, ...patch } : item));
+  save();
+  notify();
+}
+
+export function setEditingStockId(id) {
+  state.ui.editingStockId = id || null;
   save();
   notify();
 }

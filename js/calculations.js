@@ -49,3 +49,11 @@ export function sipContributed(sip) {
 
   return monthly * months;
 }
+
+export function stockInvested(stock) {
+  return (Number(stock.quantity) || 0) * (Number(stock.buyPrice) || 0);
+}
+
+export function stocksInvestedTotal(stocks) {
+  return stocks.reduce((total, stock) => total + stockInvested(stock), 0);
+}

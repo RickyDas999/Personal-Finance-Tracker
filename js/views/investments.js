@@ -1,5 +1,5 @@
 import { escapeHTML, formatINR, formatDate } from '../format.js';
-import { loanOutstandingBalance, fdCurrentValue, sipContributed } from '../calculations.js';
+import { loanOutstandingBalance, fdCurrentValue, sipContributed, stockInvested } from '../calculations.js';
 
 function renderLoanList(loans) {
   if (loans.length === 0) {
@@ -71,6 +71,62 @@ function renderSipList(sips) {
         </li>
       `
     )
+    .join('');
+
+  return `<ul class="list">${rows}</ul>`;
+}
+
+function renderStockEditForm(stock) {
+  return `
+    <li class="list-row">
+      <form data-action="save-stock" class="form-row">
+        <input type="hidden" name="id" value="${escapeHTML(stock.id)}" />
+        <div class="field">
+          <label for="stock-edit-name-${escapeHTML(stock.id)}">Name</label>
+          <input id="stock-edit-name-${escapeHTML(stock.id)}" name="name" type="text" required maxlength="60" value="${escapeHTML(stock.name)}" />
+        </div>
+        <div class="field">
+          <label for="stock-edit-sector-${escapeHTML(stock.id)}">Sector</label>
+          <input id="stock-edit-sector-${escapeHTML(stock.id)}" name="sector" type="text" required maxlength="40" value="${escapeHTML(stock.sector)}" />
+        </div>
+        <div class="field">
+          <label for="stock-edit-qty-${escapeHTML(stock.id)}">Quantity</label>
+          <input id="stock-edit-qty-${escapeHTML(stock.id)}" name="quantity" type="number" min="0" step="1" required value="${escapeHTML(stock.quantity)}" />
+        </div>
+        <div class="field">
+          <label for="stock-edit-price-${escapeHTML(stock.id)}">Buy price (₹)</label>
+          <input id="stock-edit-price-${escapeHTML(stock.id)}" name="buyPrice" type="number" min="0" step="0.01" required value="${escapeHTML(stock.buyPrice)}" />
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn" data-action="cancel-edit-stock">Cancel</button>
+      </form>
+    </li>
+  `;
+}
+
+function renderStockRow(stock) {
+  return `
+    <li class="list-row">
+      <div>
+        <strong>${escapeHTML(stock.name)}</strong>
+        <div class="text-muted">${escapeHTML(stock.sector)} &middot; ${escapeHTML(stock.quantity)} @ ${formatINR(stock.buyPrice)}</div>
+      </div>
+      <div class="form-row">
+        <span>Invested: ${formatINR(stockInvested(stock))}</span>
+        <button type="button" class="btn" data-action="start-edit-stock" data-id="${escapeHTML(stock.id)}">Edit</button>
+        <button type="button" class="btn btn-danger" data-action="delete-stock" data-id="${escapeHTML(stock.id)}">Delete</button>
+      </div>
+    </li>
+  `;
+}
+
+function renderStockList(stocks, editingStockId) {
+  if (stocks.length === 0) {
+    return '<p class="empty-state">No stocks added yet.</p>';
+  }
+
+  const rows = stocks
+    .map((stock) => (stock.id === editingStockId ? renderStockEditForm(stock) : renderStockRow(stock)))
     .join('');
 
   return `<ul class="list">${rows}</ul>`;
@@ -158,7 +214,27 @@ export function renderInvestments(panel, state) {
 
     <section class="card section-gap" aria-labelledby="stocks-heading">
       <h3 id="stocks-heading">My Stocks</h3>
-      <p class="empty-state">Stock holdings coming soon.</p>
+      <form data-action="add-stock" class="form-row">
+        <div class="field">
+          <label for="stock-name">Name</label>
+          <input id="stock-name" name="name" type="text" required maxlength="60" />
+        </div>
+        <div class="field">
+          <label for="stock-sector">Sector</label>
+          <input id="stock-sector" name="sector" type="text" required maxlength="40" />
+        </div>
+        <div class="field">
+          <label for="stock-quantity">Quantity</label>
+          <input id="stock-quantity" name="quantity" type="number" min="0" step="1" required />
+        </div>
+        <div class="field">
+          <label for="stock-price">Buy price (₹)</label>
+          <input id="stock-price" name="buyPrice" type="number" min="0" step="0.01" required />
+        </div>
+        <button type="submit" class="btn btn-primary">Add stock</button>
+      </form>
+
+      ${renderStockList(state.stocks, state.ui.editingStockId)}
     </section>
   `;
 }

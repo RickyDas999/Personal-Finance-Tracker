@@ -11,18 +11,25 @@ import {
   deleteFd,
   addSip,
   deleteSip,
+  addStock,
+  deleteStock,
+  updateStock,
+  setEditingStockId,
 } from './state.js';
 import { render } from './render.js';
 
-const DELETE_ACTIONS = {
+const CLICK_ACTIONS = {
   'delete-income': deleteIncome,
   'delete-expense': deleteExpense,
   'delete-loan': deleteLoan,
   'delete-fd': deleteFd,
   'delete-sip': deleteSip,
+  'delete-stock': deleteStock,
+  'start-edit-stock': setEditingStockId,
+  'cancel-edit-stock': () => setEditingStockId(null),
 };
 
-const ADD_ACTIONS = {
+const FORM_ACTIONS = {
   'add-income': (data) =>
     addIncome({
       source: data.get('source').trim(),
@@ -57,6 +64,22 @@ const ADD_ACTIONS = {
       monthly: Number(data.get('monthly')),
       startDate: data.get('startDate'),
     }),
+  'add-stock': (data) =>
+    addStock({
+      name: data.get('name').trim(),
+      sector: data.get('sector').trim(),
+      quantity: Number(data.get('quantity')),
+      buyPrice: Number(data.get('buyPrice')),
+    }),
+  'save-stock': (data) => {
+    updateStock(data.get('id'), {
+      name: data.get('name').trim(),
+      sector: data.get('sector').trim(),
+      quantity: Number(data.get('quantity')),
+      buyPrice: Number(data.get('buyPrice')),
+    });
+    setEditingStockId(null);
+  },
 };
 
 document.addEventListener('click', (event) => {
@@ -67,16 +90,16 @@ document.addEventListener('click', (event) => {
   }
 
   const actionBtn = event.target.closest('[data-action]');
-  if (actionBtn && DELETE_ACTIONS[actionBtn.dataset.action]) {
-    DELETE_ACTIONS[actionBtn.dataset.action](actionBtn.dataset.id);
+  if (actionBtn && CLICK_ACTIONS[actionBtn.dataset.action]) {
+    CLICK_ACTIONS[actionBtn.dataset.action](actionBtn.dataset.id);
   }
 });
 
 document.addEventListener('submit', (event) => {
   const form = event.target.closest('[data-action]');
-  if (form && ADD_ACTIONS[form.dataset.action]) {
+  if (form && FORM_ACTIONS[form.dataset.action]) {
     event.preventDefault();
-    ADD_ACTIONS[form.dataset.action](new FormData(form));
+    FORM_ACTIONS[form.dataset.action](new FormData(form));
     form.reset();
   }
 });
