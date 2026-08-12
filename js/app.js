@@ -7,6 +7,8 @@ import {
   setExpenseCategoryFilter,
   addLoan,
   deleteLoan,
+  addFd,
+  deleteFd,
 } from './state.js';
 import { render } from './render.js';
 
@@ -14,6 +16,7 @@ const DELETE_ACTIONS = {
   'delete-income': deleteIncome,
   'delete-expense': deleteExpense,
   'delete-loan': deleteLoan,
+  'delete-fd': deleteFd,
 };
 
 const ADD_ACTIONS = {
@@ -36,6 +39,14 @@ const ADD_ACTIONS = {
       emi: Number(data.get('emi')),
       ratePct: Number(data.get('ratePct')),
       monthsLeft: Number(data.get('monthsLeft')),
+    }),
+  'add-fd': (data) =>
+    addFd({
+      name: data.get('name').trim(),
+      principal: Number(data.get('principal')),
+      ratePct: Number(data.get('ratePct')),
+      startDate: data.get('startDate'),
+      maturityDate: data.get('maturityDate'),
     }),
 };
 

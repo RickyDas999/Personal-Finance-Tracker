@@ -1,5 +1,5 @@
-import { escapeHTML, formatINR } from '../format.js';
-import { loanOutstandingBalance } from '../calculations.js';
+import { escapeHTML, formatINR, formatDate } from '../format.js';
+import { loanOutstandingBalance, fdCurrentValue } from '../calculations.js';
 
 function renderLoanList(loans) {
   if (loans.length === 0) {
@@ -17,6 +17,31 @@ function renderLoanList(loans) {
           <div class="form-row">
             <span>Outstanding: ${formatINR(loanOutstandingBalance(loan))}</span>
             <button type="button" class="btn btn-danger" data-action="delete-loan" data-id="${escapeHTML(loan.id)}">Delete</button>
+          </div>
+        </li>
+      `
+    )
+    .join('');
+
+  return `<ul class="list">${rows}</ul>`;
+}
+
+function renderFdList(fds) {
+  if (fds.length === 0) {
+    return '<p class="empty-state">No FDs added yet.</p>';
+  }
+
+  const rows = fds
+    .map(
+      (fd) => `
+        <li class="list-row">
+          <div>
+            <strong>${escapeHTML(fd.name)}</strong>
+            <div class="text-muted">Principal ${formatINR(fd.principal)} &middot; ${escapeHTML(fd.ratePct)}% p.a. &middot; ${formatDate(fd.startDate)} to ${formatDate(fd.maturityDate)}</div>
+          </div>
+          <div class="form-row">
+            <span title="Simple-interest estimate, not compounded">Current value (est.): ${formatINR(fdCurrentValue(fd))}</span>
+            <button type="button" class="btn btn-danger" data-action="delete-fd" data-id="${escapeHTML(fd.id)}">Delete</button>
           </div>
         </li>
       `
@@ -57,7 +82,32 @@ export function renderInvestments(panel, state) {
 
     <section class="card section-gap" aria-labelledby="fds-heading">
       <h3 id="fds-heading">Fixed Deposits</h3>
-      <p class="empty-state">FD tracking coming soon.</p>
+      <p class="text-muted">Current value is a simple-interest estimate from the principal, rate, and dates you enter &mdash; not a bank-quoted figure.</p>
+      <form data-action="add-fd" class="form-row">
+        <div class="field">
+          <label for="fd-name">Name</label>
+          <input id="fd-name" name="name" type="text" required maxlength="60" />
+        </div>
+        <div class="field">
+          <label for="fd-principal">Principal (₹)</label>
+          <input id="fd-principal" name="principal" type="number" min="0" step="1" required />
+        </div>
+        <div class="field">
+          <label for="fd-rate">Rate (% p.a.)</label>
+          <input id="fd-rate" name="ratePct" type="number" min="0" step="0.01" required />
+        </div>
+        <div class="field">
+          <label for="fd-start">Start date</label>
+          <input id="fd-start" name="startDate" type="date" required />
+        </div>
+        <div class="field">
+          <label for="fd-maturity">Maturity date</label>
+          <input id="fd-maturity" name="maturityDate" type="date" required />
+        </div>
+        <button type="submit" class="btn btn-primary">Add FD</button>
+      </form>
+
+      ${renderFdList(state.fds)}
     </section>
 
     <section class="card section-gap" aria-labelledby="sips-heading">

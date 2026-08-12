@@ -8,3 +8,27 @@ export function loanOutstandingBalance(loan) {
 
   return (emi * (1 - Math.pow(1 + monthlyRate, -monthsLeft))) / monthlyRate;
 }
+
+function parseLocalDate(dateStr) {
+  const [year, month, day] = String(dateStr).split('-').map(Number);
+  return new Date(year, (month || 1) - 1, day || 1);
+}
+
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+export function fdCurrentValue(fd) {
+  const principal = Number(fd.principal) || 0;
+  const ratePct = Number(fd.ratePct) || 0;
+  const start = parseLocalDate(fd.startDate);
+  const maturity = parseLocalDate(fd.maturityDate);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  if (Number.isNaN(start.getTime())) return principal;
+
+  const cappedEnd = Math.min(today.getTime(), maturity.getTime());
+  const elapsedDays = Math.max(0, (cappedEnd - start.getTime()) / MS_PER_DAY);
+  const yearsElapsed = elapsedDays / 365;
+
+  return principal + principal * (ratePct / 100) * yearsElapsed;
+}
