@@ -5,12 +5,15 @@ import {
   addExpense,
   deleteExpense,
   setExpenseCategoryFilter,
+  addLoan,
+  deleteLoan,
 } from './state.js';
 import { render } from './render.js';
 
 const DELETE_ACTIONS = {
   'delete-income': deleteIncome,
   'delete-expense': deleteExpense,
+  'delete-loan': deleteLoan,
 };
 
 const ADD_ACTIONS = {
@@ -26,6 +29,13 @@ const ADD_ACTIONS = {
       amount: Number(data.get('amount')),
       date: data.get('date'),
       note: (data.get('note') || '').trim(),
+    }),
+  'add-loan': (data) =>
+    addLoan({
+      name: data.get('name').trim(),
+      emi: Number(data.get('emi')),
+      ratePct: Number(data.get('ratePct')),
+      monthsLeft: Number(data.get('monthsLeft')),
     }),
 };
 
