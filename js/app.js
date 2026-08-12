@@ -15,8 +15,24 @@ import {
   deleteStock,
   updateStock,
   setEditingStockId,
+  toggleWatchlistSort,
+  setWatchlistSectorFilter,
 } from './state.js';
 import { render } from './render.js';
+
+const liveRegion = document.getElementById('live-region');
+function announce(message) {
+  if (liveRegion) liveRegion.textContent = message;
+}
+
+const CONFIRM_MESSAGES = {
+  'delete-income': 'Delete this income entry?',
+  'delete-expense': 'Delete this expense?',
+  'delete-loan': 'Delete this loan?',
+  'delete-fd': 'Delete this FD?',
+  'delete-sip': 'Delete this SIP?',
+  'delete-stock': 'Delete this stock?',
+};
 
 const CLICK_ACTIONS = {
   'delete-income': deleteIncome,
@@ -27,6 +43,7 @@ const CLICK_ACTIONS = {
   'delete-stock': deleteStock,
   'start-edit-stock': setEditingStockId,
   'cancel-edit-stock': () => setEditingStockId(null),
+  'toggle-watchlist-sort': toggleWatchlistSort,
 };
 
 const FORM_ACTIONS = {
@@ -91,7 +108,10 @@ document.addEventListener('click', (event) => {
 
   const actionBtn = event.target.closest('[data-action]');
   if (actionBtn && CLICK_ACTIONS[actionBtn.dataset.action]) {
+    const confirmMsg = CONFIRM_MESSAGES[actionBtn.dataset.action];
+    if (confirmMsg && !window.confirm(confirmMsg)) return;
     CLICK_ACTIONS[actionBtn.dataset.action](actionBtn.dataset.id);
+    if (confirmMsg) announce('Deleted.');
   }
 });
 
@@ -101,13 +121,20 @@ document.addEventListener('submit', (event) => {
     event.preventDefault();
     FORM_ACTIONS[form.dataset.action](new FormData(form));
     form.reset();
+    announce('Saved.');
   }
 });
 
 document.addEventListener('change', (event) => {
-  const filterSelect = event.target.closest('[data-action="filter-expense-category"]');
-  if (filterSelect) {
-    setExpenseCategoryFilter(filterSelect.value);
+  const expenseFilter = event.target.closest('[data-action="filter-expense-category"]');
+  if (expenseFilter) {
+    setExpenseCategoryFilter(expenseFilter.value);
+    return;
+  }
+
+  const sectorFilter = event.target.closest('[data-action="filter-watchlist-sector"]');
+  if (sectorFilter) {
+    setWatchlistSectorFilter(sectorFilter.value);
   }
 });
 

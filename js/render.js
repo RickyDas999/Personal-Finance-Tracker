@@ -28,7 +28,13 @@ export function render() {
   });
 
   navButtons.forEach((btn) => {
-    btn.classList.toggle('is-active', btn.dataset.tab === activeTab);
+    const isActive = btn.dataset.tab === activeTab;
+    btn.classList.toggle('is-active', isActive);
+    if (isActive) {
+      btn.setAttribute('aria-current', 'page');
+    } else {
+      btn.removeAttribute('aria-current');
+    }
   });
 
   TAB_RENDERERS[activeTab](TAB_PANELS[activeTab], state);

@@ -47,6 +47,18 @@ h1, h2, h3 {
   line-height: 1.25;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* ---------- Focus ring ---------- */
 a:focus-visible,
 button:focus-visible,
@@ -165,6 +177,63 @@ textarea:focus-visible,
   background: transparent;
   border-color: var(--color-danger);
   color: var(--color-danger);
+}
+
+.headline {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: var(--space-2) 0 var(--space-4);
+}
+
+.flow-bar {
+  display: flex;
+  height: 20px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--color-border);
+}
+
+.flow-segment {
+  height: 100%;
+}
+
+.flow-segment--expenses { background: #d97706; }
+.flow-segment--emi { background: #7c3aed; }
+.flow-segment--sip { background: #2563eb; }
+.flow-segment--savings { background: var(--color-positive); }
+
+.flow-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-top: var(--space-3);
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: var(--space-1);
+}
+
+.dot--expenses { background: #d97706; }
+.dot--emi { background: #7c3aed; }
+.dot--sip { background: #2563eb; }
+.dot--savings { background: var(--color-positive); }
+
+.stat-value {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-top: var(--space-1);
+}
+
+.quick-add-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-4);
 }
 
 .list {

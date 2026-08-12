@@ -57,3 +57,48 @@ export function stockInvested(stock) {
 export function stocksInvestedTotal(stocks) {
   return stocks.reduce((total, stock) => total + stockInvested(stock), 0);
 }
+
+function isInMonth(dateStr, referenceDate) {
+  const date = parseLocalDate(dateStr);
+  return date.getFullYear() === referenceDate.getFullYear() && date.getMonth() === referenceDate.getMonth();
+}
+
+export function monthlyIncomeTotal(income, referenceDate = new Date()) {
+  return income
+    .filter((item) => isInMonth(item.date, referenceDate))
+    .reduce((total, item) => total + (Number(item.amount) || 0), 0);
+}
+
+export function monthlyExpensesTotal(expenses, referenceDate = new Date()) {
+  return expenses
+    .filter((item) => isInMonth(item.date, referenceDate))
+    .reduce((total, item) => total + (Number(item.amount) || 0), 0);
+}
+
+export function emiTotal(loans) {
+  return loans.reduce((total, loan) => total + (Number(loan.emi) || 0), 0);
+}
+
+export function sipMonthlyTotal(sips) {
+  return sips.reduce((total, sip) => total + (Number(sip.monthly) || 0), 0);
+}
+
+export function outstandingDebtTotal(loans) {
+  return loans.reduce((total, loan) => total + loanOutstandingBalance(loan), 0);
+}
+
+export function fdValueTotal(fds) {
+  return fds.reduce((total, fd) => total + fdCurrentValue(fd), 0);
+}
+
+export function sipContributedTotal(sips) {
+  return sips.reduce((total, sip) => total + sipContributed(sip), 0);
+}
+
+export function netCashFlow(state) {
+  const income = monthlyIncomeTotal(state.income);
+  const expenses = monthlyExpensesTotal(state.expenses);
+  const emi = emiTotal(state.loans);
+  const sip = sipMonthlyTotal(state.sips);
+  return income - expenses - emi - sip;
+}
