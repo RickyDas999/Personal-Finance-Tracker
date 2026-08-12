@@ -193,6 +193,10 @@ textarea:focus-visible,
   margin-top: var(--space-5);
 }
 
+.filter-field {
+  max-width: 240px;
+}
+
 .empty-state {
   color: var(--color-text-muted);
   font-style: italic;
