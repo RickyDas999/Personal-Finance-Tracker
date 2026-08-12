@@ -1,5 +1,5 @@
 import { escapeHTML, formatINR, formatDate } from '../format.js';
-import { loanOutstandingBalance, fdCurrentValue } from '../calculations.js';
+import { loanOutstandingBalance, fdCurrentValue, sipContributed } from '../calculations.js';
 
 function renderLoanList(loans) {
   if (loans.length === 0) {
@@ -42,6 +42,31 @@ function renderFdList(fds) {
           <div class="form-row">
             <span title="Simple-interest estimate, not compounded">Current value (est.): ${formatINR(fdCurrentValue(fd))}</span>
             <button type="button" class="btn btn-danger" data-action="delete-fd" data-id="${escapeHTML(fd.id)}">Delete</button>
+          </div>
+        </li>
+      `
+    )
+    .join('');
+
+  return `<ul class="list">${rows}</ul>`;
+}
+
+function renderSipList(sips) {
+  if (sips.length === 0) {
+    return '<p class="empty-state">No SIPs added yet.</p>';
+  }
+
+  const rows = sips
+    .map(
+      (sip) => `
+        <li class="list-row">
+          <div>
+            <strong>${escapeHTML(sip.name)}</strong>
+            <div class="text-muted">${formatINR(sip.monthly)}/month &middot; started ${formatDate(sip.startDate)}</div>
+          </div>
+          <div class="form-row">
+            <span>Contributed to date: ${formatINR(sipContributed(sip))}</span>
+            <button type="button" class="btn btn-danger" data-action="delete-sip" data-id="${escapeHTML(sip.id)}">Delete</button>
           </div>
         </li>
       `
@@ -112,7 +137,23 @@ export function renderInvestments(panel, state) {
 
     <section class="card section-gap" aria-labelledby="sips-heading">
       <h3 id="sips-heading">SIPs</h3>
-      <p class="empty-state">SIP tracking coming soon.</p>
+      <form data-action="add-sip" class="form-row">
+        <div class="field">
+          <label for="sip-name">Name</label>
+          <input id="sip-name" name="name" type="text" required maxlength="60" />
+        </div>
+        <div class="field">
+          <label for="sip-monthly">Monthly (₹)</label>
+          <input id="sip-monthly" name="monthly" type="number" min="0" step="1" required />
+        </div>
+        <div class="field">
+          <label for="sip-start">Start date</label>
+          <input id="sip-start" name="startDate" type="date" required />
+        </div>
+        <button type="submit" class="btn btn-primary">Add SIP</button>
+      </form>
+
+      ${renderSipList(state.sips)}
     </section>
 
     <section class="card section-gap" aria-labelledby="stocks-heading">

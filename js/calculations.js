@@ -32,3 +32,20 @@ export function fdCurrentValue(fd) {
 
   return principal + principal * (ratePct / 100) * yearsElapsed;
 }
+
+export function sipContributed(sip) {
+  const monthly = Number(sip.monthly) || 0;
+  const start = parseLocalDate(sip.startDate);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  if (Number.isNaN(start.getTime()) || start.getTime() > today.getTime()) return 0;
+
+  let months = (today.getFullYear() - start.getFullYear()) * 12 + (today.getMonth() - start.getMonth());
+  if (today.getDate() < start.getDate()) {
+    months -= 1;
+  }
+  months = Math.max(0, months);
+
+  return monthly * months;
+}

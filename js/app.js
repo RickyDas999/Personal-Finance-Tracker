@@ -9,6 +9,8 @@ import {
   deleteLoan,
   addFd,
   deleteFd,
+  addSip,
+  deleteSip,
 } from './state.js';
 import { render } from './render.js';
 
@@ -17,6 +19,7 @@ const DELETE_ACTIONS = {
   'delete-expense': deleteExpense,
   'delete-loan': deleteLoan,
   'delete-fd': deleteFd,
+  'delete-sip': deleteSip,
 };
 
 const ADD_ACTIONS = {
@@ -47,6 +50,12 @@ const ADD_ACTIONS = {
       ratePct: Number(data.get('ratePct')),
       startDate: data.get('startDate'),
       maturityDate: data.get('maturityDate'),
+    }),
+  'add-sip': (data) =>
+    addSip({
+      name: data.get('name').trim(),
+      monthly: Number(data.get('monthly')),
+      startDate: data.get('startDate'),
     }),
 };
 
