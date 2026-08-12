@@ -187,6 +187,11 @@ textarea:focus-visible,
 
 .text-positive { color: var(--color-positive); }
 .text-negative { color: var(--color-negative); }
+.text-muted { color: var(--color-text-muted); font-size: 0.85rem; }
+
+.section-gap {
+  margin-top: var(--space-5);
+}
 
 .empty-state {
   color: var(--color-text-muted);
