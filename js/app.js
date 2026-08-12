@@ -1,2 +1,11 @@
-// Entry point. State, rendering, and event wiring land in later steps.
-console.log('Personal Finance Tracker: app.js loaded');
+import { setActiveTab } from './state.js';
+import { render } from './render.js';
+
+document.addEventListener('click', (event) => {
+  const tabBtn = event.target.closest('[data-tab]');
+  if (tabBtn) {
+    setActiveTab(tabBtn.dataset.tab);
+  }
+});
+
+render();
